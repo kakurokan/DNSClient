@@ -67,3 +67,6 @@ def main():
     print("Resposta em hexadecimal:\n" + response.hex())
 
     client_socket.close()
+
+if __name__ == "__main__":
+    main()
