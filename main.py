@@ -2,6 +2,7 @@ from dataclasses import dataclass
 import dataclasses
 import struct
 import random
+import socket
 
 random.seed(1)
 TYPE_A = 1
@@ -43,10 +44,19 @@ def encode_dns_name(domain_name):
 
 def build_query(domain_name, record_type):
     name = encode_dns_name(domain_name)
-    id = random.randint(0, 65535)
+    id_header = random.randint(0, 65535)
     RECURSION_DESIRED = 1 << 8
     
-    header = DNSHeader(id = id, questions = 1, flags = RECURSION_DESIRED)
+    header = DNSHeader(id = id_header, questions = 1, flags = RECURSION_DESIRED)
     question = DNSQuestion(name = name, type_ = record_type, class_ = CLASS_IN)
     
     return header_to_bytes(header) + question_to_bytes(question)
+
+query = build_query("ualg.pt", 1)
+
+sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+
+sock.sendto(query, ("8.8.8.8", 53))
+
+response, _ = sock.recvfrom(1024)
+print("Resposta em hexadecimal:\n" + response.hex())
