@@ -52,11 +52,18 @@ def build_query(domain_name, record_type):
     
     return header_to_bytes(header) + question_to_bytes(question)
 
-query = build_query("ualg.pt", 1)
+def main():
+    servidor_dns = "8.8.8.8"
+    porta_dns = 53
+    alvo = "ualg.pt"
 
-sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    query = build_query(alvo, 1)
 
-sock.sendto(query, ("8.8.8.8", 53))
+    client_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
-response, _ = sock.recvfrom(1024)
-print("Resposta em hexadecimal:\n" + response.hex())
+    client_socket.sendto(query, (servidor_dns, porta_dns))
+
+    response, _ = client_socket.recvfrom(1024)
+    print("Resposta em hexadecimal:\n" + response.hex())
+
+    client_socket.close()
